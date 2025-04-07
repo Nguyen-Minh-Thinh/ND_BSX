@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhóm Anh Thịnh</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<!-- Added: Navigation Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="bi bi-camera-fill me-2"></i>Smart LPR System
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="#">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#analytics">Thống kê</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Added: Hero Section -->
+<div class="hero-section py-5 mb-4">
+  <div class="container text-center">
+    <h1 class="display-4 mb-3">Nhận diện biển số xe</h1>
+    <p class="lead">Hệ thống AI hỗ trợ nhận diện biển số xe</p>
+  </div>
+</div>
+
+<!-- Updated: Main Content Section -->
+<div class="container py-4">
+  <div class="row">
+    <div class="col">
+    <!-- <div class="col-lg-8"> -->
+    
+      <div class="card shadow-lg recognition-card mb-4">
+        <div class="card-body p-4">
+          <h3 class="card-title mb-4">Quét biển số xe</h3>
+          <!-- No changes to vehicle type selection -->
+          <div class="btn-group d-flex justify-content-center mb-4" role="group">
+            <input type="radio" class="btn-check" name="vehicleType" id="motorbike" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="motorbike">Xe máy</label>
+            <input type="radio" class="btn-check" name="vehicleType" id="car" autocomplete="off">
+            <label class="btn btn-outline-primary" for="car">Ô tô</label>
+          </div>
+          <!-- No changes to upload zone -->
+          <div class="upload-zone mb-4" id="dropZone">
+            <div class="text-center p-4 border rounded-3 position-relative">
+              <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1" class="preview-image d-none mb-3" alt="Preview">
+              <video controls class="preview-video d-none mb-3" width="100%"></video>
+              <div class="upload-content">
+                <i class="bi bi-cloud-upload display-4"></i>
+                <p class="mb-2">Kéo và thả ảnh (video) hoặc click để tải lên</p>
+                <p class="text-muted small mb-3">Hỗ trợ định dạng :.mov, .mp4, .jpg, .jpeg, .png</p>
+                <label class="btn btn-primary mb-0" for="fileInput">Duyệt tập tin</label>
+                <input type="file" id="fileInput" class="d-none" accept=".mov,.mp4,.jpg,.jpeg,.png">
+              </div>
+            </div>
+          </div>
+          <!-- Updated: Recognition Results Section -->
+          <div class="recognition-result mb-4 d-none ">
+            <div class="card border-success">
+              <div class="card-body">
+                <h5 class="card-title">Kết quả nhận diện</h5>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <p class="mb-2"><strong>Biển số xe:</strong></p>
+                    <h3 class="plate-number">ABC 123</h3>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="mb-2"><strong>Tỉ lệ xác thực:</strong></p>
+                    <div class="progress">
+                      <div class="progress-bar" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95%</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="mb-2"><strong>Loại xe:</strong></p>
+                    <p class="vehicle-type mb-0">Car</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <button class="btn btn-primary btn-lg" id="recognizeBtn" disabled>Nhận dạng</button>
+            <button class="btn btn-outline-secondary btn-lg ms-2" id="resetBtn">Xóa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Added: Vehicle Information Sidebar -->
+    <!-- <div class="col-lg-4">
+      <div class="card shadow-lg mb-4">
+        <div class="card-body">
+          <h4 class="card-title">Vehicle Information</h4>
+          <div class="vehicle-info-content">
+            <div class="text-center py-4">
+              <i class="bi bi-car-front display-1 text-muted"></i>
+              <p class="mt-3">No vehicle selected</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Added: Analytics Section -->
+  <section id="analytics" class="mb-5 d-none">
+    <h3 class="mb-4">Analytics Overview</h3>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">Total Scans</h5>
+            <p class="display-6">1,234</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Success Rate</h5>
+            <p class="display-6">98.5%</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">Cars</h5>
+            <p class="display-6">856</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <h5 class="card-title">Motorbikes</h5>
+            <p class="display-6">378</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Added: Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Smart LPR System</h5>
+        <p>Advanced license plate recognition system powered by AI</p>
+      </div>
+      <div class="col-md-3">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white">Home</a></li>
+          <li><a href="#history" class="text-white">History</a></li>
+          <li><a href="#analytics" class="text-white">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h5>Contact</h5>
+        <ul class="list-unstyled">
+          <li><i class="bi bi-envelope me-2"></i>support@lpr.com</li>
+          <li><i class="bi bi-telephone me-2"></i>1-800-LPR-SCAN</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fileInput = document.getElementById("fileInput");
+      const recognizeBtn = document.getElementById("recognizeBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const dropZone = document.getElementById("dropZone");
+      const previewImage = document.querySelector(".preview-image");
+      const resultSection = document.querySelector(".recognition-result");
+      const plateNumber = document.querySelector(".plate-number");
+      const confidenceBar = document.querySelector(".progress-bar");
+      const vehicleTypeText = document.querySelector(".vehicle-type");
+    
+      let selectedFile = null;
+    
+      // Kéo & thả ảnh
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("border-primary");
+      });
+    
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("border-primary");
+      });
+    
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("border-primary");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          handleFileChange(files[0]);
+        }
+      });
+    
+      // Chọn ảnh từ nút "Browse"
+      fileInput.addEventListener("change", (e) => {
+        handleFileChange(e.target.files[0]);
+      });
+    
+      // Xử lý ảnh đã chọn
+      function handleFileChange(file) {
+        if (!file) return;
+        selectedFile = file;
+        const fileType = file.type;
+
+        const imagePreview = document.createElement("img");
+        const videoPreview = document.querySelector(".preview-video");
+        const uploadContent = document.querySelector(".upload-content");
+
+        // Nếu là ảnh
+        if (fileType.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+            imagePreview.className = "preview-image mb-3";
+            imagePreview.style.maxWidth = "100%";
+
+            // Xoá preview cũ nếu có
+            videoPreview.classList.add("d-none");
+            videoPreview.pause();
+            dropZone.querySelector(".preview-image")?.remove();
+            dropZone.querySelector(".text-center").prepend(imagePreview);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Nếu là video
+        else if (fileType.startsWith("video/")) {
+            const videoURL = URL.createObjectURL(file);
+            videoPreview.src = videoURL;
+            videoPreview.classList.remove("d-none");
+
+            // Xoá preview ảnh cũ nếu có
+            dropZone.querySelector(".preview-image")?.remove();
+        }
+
+        uploadContent.classList.add("d-none");
+        recognizeBtn.disabled = false;
+        }
+    
+      // Gửi ảnh về API
+      recognizeBtn.addEventListener("click", async () => {
+        if (!selectedFile) return;
+        
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+    
+        // Lấy loại phương tiện
+        const vehicleType = document.querySelector("input[name='vehicleType']:checked")?.id || "";
+    
+        formData.append("vehicleType", vehicleType);
+        console.log(vehicleType);
+        try {
+          recognizeBtn.innerText = "Processing...";
+          recognizeBtn.disabled = true;
+    
+          const response = await fetch("http://localhost:8080/api/recognize", {
+            method: "POST",
+            body: formData
+          });
+    
+          if (!response.ok) throw new Error("Failed to recognize plate");
+    
+          const result = await response.json();
+    
+          // Cập nhật giao diện
+          plateNumber.textContent = result.plate || "Unknown";
+          confidenceBar.style.width = `${result.confidence}%`;
+          confidenceBar.setAttribute("aria-valuenow", result.confidence);
+          confidenceBar.textContent = `${result.confidence}%`;
+          vehicleTypeText.textContent = result.vehicleType || "Unknown";
+    
+          resultSection.classList.remove("d-none");
+        } catch (error) {
+          alert("Error: " + error.message);
+        } finally {
+          recognizeBtn.innerText = "Recognize Plate";
+          recognizeBtn.disabled = false;
+        }
+      });
+    
+      // Nút Reset
+      resetBtn.addEventListener("click", () => {
+        fileInput.value = "";
+        previewImage.classList.add("d-none");
+
+        const existingPreviewImage = document.querySelector(".preview-image");
+        if (existingPreviewImage) {
+            existingPreviewImage.remove(); // Xóa hoàn toàn ảnh
+        }
+
+
+        const previewVideo = document.querySelector("video");
+        if (previewVideo) {
+            previewVideo.pause();         // Dừng video nếu đang phát
+            previewVideo.src = "";        // Xóa video
+            previewVideo.load();          // Làm mới lại
+            previewVideo.classList.add("d-none");
+        }
+
+        resultSection.classList.add("d-none");
+        document.querySelector(".upload-content").classList.remove("d-none");
+        recognizeBtn.disabled = true;
+        selectedFile = null;
+      });
+    });
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

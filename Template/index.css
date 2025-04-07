@@ -1,0 +1,147 @@
+:root {
+    --primary: #0d6efd;
+    --primary-foreground: #ffffff;
+    --secondary: #6c757d;
+    --secondary-foreground: #ffffff;
+    --accent: #198754;
+    --accent-foreground: #ffffff;
+    --background: #f8f9fa;
+    --foreground: #212529;
+    --card: #ffffff;
+    --card-foreground: #212529;
+    --border: #dee2e6;
+    --input: #e9ecef;
+    --ring: rgba(13, 110, 253, 0.25);
+    --radius: 0.5rem;
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+    
+.hero-section {
+    background: linear-gradient(135deg, var(--primary), #0056b3);
+    color: white;
+    padding: 4rem 0;
+}
+    
+.recognition-card {
+    max-width: 100%;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+    
+.upload-zone {
+    background-color: var(--card);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
+}
+    
+.upload-zone:hover {
+    border-color: var(--primary);
+}
+    
+.upload-zone.dragover {
+    background-color: var(--input);
+    border-color: var(--primary);
+}
+    
+.card {
+    transition: transform 0.3s ease;
+}
+    
+.card:hover {
+    transform: translateY(-5px);
+}
+    
+#analytics .card {
+    border: none;
+    box-shadow: var(--shadow);
+}
+    
+.preview-image,
+.card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+    
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+    
+.navbar-brand {
+    font-weight: 600;
+}
+    
+footer {
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+    
+footer a {
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+    
+footer a:hover {
+    opacity: 0.8;
+}
+    
+.progress {
+    height: 25px;
+    border-radius: var(--radius);
+}
+    
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--radius);
+}
+    
+.btn-check:checked + .btn-outline-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+    
+.recognition-result .card {
+    border-radius: var(--radius);
+}
+    
+.plate-number {
+    color: var(--accent);
+    font-weight: bold;
+}
+    
+@media (max-width: 768px) {
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .recognition-card {
+        margin: 1rem 0;
+    }
+    
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
