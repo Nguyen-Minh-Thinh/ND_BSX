@@ -3,7 +3,7 @@ import numpy as np
 import imutils
 import os
 import shutil
-
+import sys
 
 
 #khởi tạo kích thước của kí tự trên biển số
@@ -18,8 +18,12 @@ model_svm =cv2.ml.SVM_load('svm.xml')
 # tạo thư mục number
 # os.mkdir('number')
 
+
+#Nhận ảnh từ some_cars.py truyền qua
+if len(sys.argv) > 1:
+    img_path = sys.argv[1] 
 #Đọc Ảnh, file pre-train
-OriImg = cv2.imread('./0404.jpg',1);
+OriImg = cv2.imread(img_path, 1)
 plate_cascade = cv2.CascadeClassifier("./cascade.xml")
 #nhận diện biển trong img
 plates = plate_cascade.detectMultiScale(OriImg, 1.1, 3)
@@ -30,8 +34,8 @@ for (x,y,w,h) in plates:
     cv2.rectangle(OriImg,(x,y),(x+w,y+h),(255,0,0),1)
     img = OriImg[y:y+h, x:x+w]
 
-cv2.imshow("Original image", OriImg)
-cv2.imshow("crop",img)
+#cv2.imshow("Original image", OriImg)
+#cv2.imshow("crop",img)
 
 (himg,wimg,chanel)=img.shape
 
@@ -57,7 +61,7 @@ cnts, _ = cv2.findContours(binImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 imgtemp=img.copy()
 cv2.drawContours(imgtemp,cnts,-1,(0,120,0),1)
 
-cv2.imshow('Khoa',imgtemp)
+#cv2.imshow('Khoa',imgtemp)
 # print (cnts);
 #khởi tạo
 plate_number=''
@@ -142,11 +146,11 @@ for i in range(len(coorarr)):
 # print('coor da sap xep', coorarr)
 #sau khi sắp xếp tao cho nó thành string lại nè
 plate_number=''.join(stringarr)
-print('bien so xe: ',plate_number)
+print('Bien so xe: ',plate_number)
 
 
 
-cv2.imshow('binary',binImg)
+#cv2.imshow('binary',binImg)
 cv2.imshow('result',imgtemp)
 #mở thư mục number để xe,
 # os.startfile('number')
