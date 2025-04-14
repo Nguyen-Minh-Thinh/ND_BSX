@@ -8,11 +8,11 @@ from tkinter import filedialog
 import subprocess
 
 # Chọn ảnh
-root = tk.Tk()
-root.withdraw()
-file_path = filedialog.askopenfilename(title="Chọn ảnh biển số", filetypes=[("Image files", "*.jpg *.png *.jpeg")])
+# root = tk.Tk()
+# root.withdraw()
+# file_path = filedialog.askopenfilename(title="Chọn ảnh biển số", filetypes=[("Image files", "*.jpg *.png *.jpeg")])
 # Đọc ảnh
-img = cv2.imread(file_path)
+img = cv2.imread(r"0.jpg")  # Truyền ảnh vào chỗ này
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
@@ -54,10 +54,21 @@ if is_valid_license_plate(text):
     res = cv2.putText(img, text=text, org=(approx[0][0][0], approx[1][0][1] + 60),
                       fontFace=font, fontScale=1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
     res = cv2.rectangle(img, tuple(approx[0][0]), tuple(approx[2][0]), (0, 255, 0), 3)
-    print('Bien so xe: ', text)
-    plt.imshow(cv2.cvtColor(res, cv2.COLOR_BGR2RGB))
-    plt.show()
+    result = str()
+    for char in text:
+        if char.isalnum():
+            result += char
+    print('Bien so xe:',result)
+    cv2.imshow('result',res)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+    # plt.imshow(cv2.cvtColor(res, cv2.COLOR_BGR2RGB))
+    # plt.show()
 
 else:
     # Nếu sai => Gọi file TestImg_final.py
-    subprocess.run(["python", "./demo_first/TestImg_final.py", file_path])
+    subprocess.run([
+    r"venv\Scripts\python.exe", 
+    "./demo_first/TestImg_final.py", 
+    "0404.jpg"      # Chỗ này là đường dẫn của ảnh
+])

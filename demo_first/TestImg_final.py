@@ -143,7 +143,7 @@ for i in range(len(coorarr)):
 # print('coor da sap xep', coorarr)
 #sau khi sắp xếp tao cho nó thành string lại nè
 plate_number=''.join(stringarr)
-print('Bien so xe: ',plate_number)
+print('Bien so xe:', plate_number)
 
 
 
