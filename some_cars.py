@@ -16,12 +16,11 @@ img = cv2.imread(file_path)
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
-#plt.show()
+
 
 bfilter = cv2.bilateralFilter(gray, 11, 17, 17) #Noise reduction
 edged = cv2.Canny(bfilter, 30, 200) #Edge detection
 plt.imshow(cv2.cvtColor(edged, cv2.COLOR_BGR2RGB))
-#plt.show()
 
 keypoints = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 contours = imutils.grab_contours(keypoints)

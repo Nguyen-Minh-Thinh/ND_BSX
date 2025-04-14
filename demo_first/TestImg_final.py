@@ -34,8 +34,6 @@ for (x,y,w,h) in plates:
     cv2.rectangle(OriImg,(x,y),(x+w,y+h),(255,0,0),1)
     img = OriImg[y:y+h, x:x+w]
 
-#cv2.imshow("Original image", OriImg)
-#cv2.imshow("crop",img)
 
 (himg,wimg,chanel)=img.shape
 
@@ -61,7 +59,6 @@ cnts, _ = cv2.findContours(binImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 imgtemp=img.copy()
 cv2.drawContours(imgtemp,cnts,-1,(0,120,0),1)
 
-#cv2.imshow('Khoa',imgtemp)
 # print (cnts);
 #khởi tạo
 plate_number=''
@@ -150,7 +147,6 @@ print('Bien so xe: ',plate_number)
 
 
 
-#cv2.imshow('binary',binImg)
 cv2.imshow('result',imgtemp)
 #mở thư mục number để xe,
 # os.startfile('number')
