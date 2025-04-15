@@ -62,7 +62,7 @@ reader = easyocr.Reader(['en'])
 result = reader.readtext(cropped_image)
 
 def is_valid_license_plate(text):
-    return len(text.replace(" ", "")) >= 5
+    return len(text.replace(" ", "")) >= 6
 text = result[0][-2] if result else ""
 if is_valid_license_plate(text):
     # Nếu đúng => Vẽ text lên ảnh + in kết quả
