@@ -12,7 +12,7 @@ import subprocess
 # root.withdraw()
 # file_path = filedialog.askopenfilename(title="Chọn ảnh biển số", filetypes=[("Image files", "*.jpg *.png *.jpeg")])
 # Đọc ảnh
-img = cv2.imread(r"0.jpg")  # Truyền ảnh vào chỗ này
+img = cv2.imread(r"Bike_back\6.jpg")  # Truyền ảnh vào chỗ này
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
@@ -46,7 +46,7 @@ reader = easyocr.Reader(['en'])
 result = reader.readtext(cropped_image)
 
 def is_valid_license_plate(text):
-    return len(text.replace(" ", "")) >= 5
+    return len(text.replace(" ", "")) >= 6
 text = result[0][-2] if result else ""
 if is_valid_license_plate(text):
     # Nếu đúng => Vẽ text lên ảnh + in kết quả
@@ -70,5 +70,5 @@ else:
     subprocess.run([
     r"venv\Scripts\python.exe", 
     "./demo_first/TestImg_final.py", 
-    "0404.jpg"      # Chỗ này là đường dẫn của ảnh
+    r"Bike_back\6.jpg"      # Chỗ này là đường dẫn của ảnh
 ])
