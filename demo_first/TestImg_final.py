@@ -5,7 +5,6 @@ import os
 import shutil
 import sys
 
-
 #khởi tạo kích thước của kí tự trên biển số
 digit_w =30
 digit_h =60
@@ -18,12 +17,20 @@ model_svm =cv2.ml.SVM_load('svm.xml')
 # tạo thư mục number
 # os.mkdir('number')
 
-
 #Nhận ảnh từ some_cars.py truyền qua
 if len(sys.argv) > 1:
-    img_path = sys.argv[1] 
+    img_path = sys.argv[1]
+else:
+    print("Error: Cần đường dẫn ảnh")
+    sys.exit(1)
+output_image = sys.argv[2] if len(sys.argv) > 2 else "output.jpg"
+
 #Đọc Ảnh, file pre-train
 OriImg = cv2.imread(img_path, 1)
+if OriImg is None:
+    print("Error: Không đọc được ảnh")
+    sys.exit(1)
+
 plate_cascade = cv2.CascadeClassifier("./cascade.xml")
 #nhận diện biển trong img
 plates = plate_cascade.detectMultiScale(OriImg, 1.1, 3)
@@ -34,8 +41,9 @@ for (x,y,w,h) in plates:
     cv2.rectangle(OriImg,(x,y),(x+w,y+h),(255,0,0),1)
     img = OriImg[y:y+h, x:x+w]
 
-
 (himg,wimg,chanel)=img.shape
+# Phân loại xe
+vehicle_type = "car" if wimg/himg > 2 else "motorcycle"
 
 if(wimg/himg >2):
     img=cv2.resize(img,dsize=(1000,200))
@@ -64,7 +72,6 @@ cv2.drawContours(imgtemp,cnts,-1,(0,120,0),1)
 plate_number=''
 count=0
 coorarr=[]
-
 
 #duyệt từng cái contour
 for c in (cnts):
@@ -117,7 +124,6 @@ stringarr=stringarr.split(" ")
 # print('stringarr chua sap xep',stringarr)
 # print('coor chua sap xep', coorarr)
 
-
 #sắp xếp lại các con số theo y
 for i in range(len(coorarr)):
     #so sánh tọa độ y
@@ -137,19 +143,21 @@ for i in range(len(coorarr)):
             tempp=coorarr[i]
             coorarr[i]=coorarr[j]
             coorarr[j]=tempp
-            
 
 # print('stringarr da sap xep',stringarr)
 # print('coor da sap xep', coorarr)
 #sau khi sắp xếp tao cho nó thành string lại nè
 plate_number=''.join(stringarr)
 print('Bien so xe:', plate_number)
+print('Loai xe:', vehicle_type)
 
+# Lưu ảnh cho API
+cv2.imwrite(output_image, imgtemp)
 
-
-cv2.imshow('result',imgtemp)
-#mở thư mục number để xe,
-# os.startfile('number')
-
-cv2.waitKey()
-cv2.destroyAllWindows()
+# Chỉ hiển thị khi chạy thủ công
+if len(sys.argv) <= 1:
+    cv2.imshow('result',imgtemp)
+    #mở thư mục number để xe,
+    # os.startfile('number')
+    cv2.waitKey()
+    cv2.destroyAllWindows()
