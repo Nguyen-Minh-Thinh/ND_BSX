@@ -12,7 +12,7 @@ import subprocess
 # root.withdraw()
 # file_path = filedialog.askopenfilename(title="Chọn ảnh biển số", filetypes=[("Image files", "*.jpg *.png *.jpeg")])
 # Đọc ảnh
-img = cv2.imread(r"Bike_back\6.jpg")  # Truyền ảnh vào chỗ này
+img = cv2.imread(r"Bike_back\1.jpg")  # Truyền ảnh vào chỗ này
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
@@ -70,5 +70,5 @@ else:
     subprocess.run([
     r"venv\Scripts\python.exe", 
     "./demo_first/TestImg_final.py", 
-    r"Bike_back\6.jpg"      # Chỗ này là đường dẫn của ảnh
+    r"Bike_back\1.jpg"      # Chỗ này là đường dẫn của ảnh
 ])
