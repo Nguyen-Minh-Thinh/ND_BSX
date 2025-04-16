@@ -1,150 +1,98 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import subprocess
 import cv2
-import numpy as np
-import imutils
+import base64
 import os
-from werkzeug.utils import secure_filename
+import tempfile
+import time
+import logging
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for the entire app
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Khởi tạo kích thước ký tự
-digit_w = 30
-digit_h = 60
+app = FastAPI()
 
-# Load mô hình SVM và cascade
-model_svm = cv2.ml.SVM_load('svm.xml')
-plate_cascade = cv2.CascadeClassifier('cascade2.xml')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080", "*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Thư mục lưu file tạm
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+@app.post("/process_license_plate")
+async def process_license_plate(file: UploadFile = File(...)):
+    logger.info("Nhận request /process_license_plate")
+    
+    output_dir = "processed_images"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-# Hàm tiền xử lý ảnh
-def Pretreatment(imgLP):
-    grayImg = cv2.cvtColor(imgLP, cv2.COLOR_BGR2GRAY)
-    noise_removal = cv2.bilateralFilter(grayImg, 9, 75, 75)
-    ret, binImg = cv2.threshold(grayImg, 100, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    kerel3 = cv2.getStructuringElement(cv2.MORPH_RECT, (4, 1))
-    binImg = cv2.morphologyEx(binImg, cv2.MORPH_DILATE, kerel3)
-    return binImg
+    timestamp = int(time.time())
+    output_filename = f"processed_{timestamp}.jpg"
+    output_filepath = os.path.join(output_dir, output_filename)
+    logger.info(f"Output path: {output_filepath}")
 
-# Hàm tìm contour
-def contours_detect(binImg):
-    cnts, _ = cv2.findContours(binImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    return cnts
-
-# Hàm vẽ contour
-def draw_rects_on_img(img, cnts):
-    imgtemp = img.copy()
-    cv2.drawContours(imgtemp, cnts, -1, (0, 120, 0), 1)
-    return imgtemp
-
-# Hàm nhận diện và sắp xếp ký tự
-def find_number(cnts, binImg, imgtemp, vehicle_type):
-    count = 0
-    plate_number = ''
-    coorarr = []
-    firstrow = []
-    lastrow = []
-
-    # Duyệt contour
-    for c in cnts:
-        x, y, w, h = cv2.boundingRect(c)
-        if h/w > 1.5 and h/w < 4 and cv2.contourArea(c) > 4000:
-            # Crop ký tự
-            crop = imgtemp[y:y+h, x:x+w]
-            count += 1
-            cv2.imwrite(f'./number/number{count}.jpg', crop)
-            coorarr.append((x, y, ''))
-
-            # Xử lý ký tự
-            binImgtemp = binImg
-            curr_num = binImgtemp[y:y+h, x:x+w]
-            curr_num = cv2.resize(curr_num, dsize=(digit_w, digit_h))
-            _, curr_num = cv2.threshold(curr_num, 30, 255, cv2.THRESH_BINARY)
-            curr_num = np.array(curr_num, dtype=np.float32)
-            curr_num = curr_num.reshape(-1, digit_w * digit_h)
-
-            # Dự đoán
-            result = model_svm.predict(curr_num)[-1]
-            result = int(result[0, 0])
-            char = str(result) if result <= 9 else chr(result)
-            coorarr[-1] = (x, y, char)
-
-    # Sắp xếp theo y (hàng trên/dưới)
-    coorarr.sort(key=lambda elem: elem[1])
-    firstrow = coorarr[:4]  # Hàng trên
-    lastrow = coorarr[4:]  # Hàng dưới
-    firstrow.sort(key=lambda elem: elem[0])  # Sắp xếp trái -> phải
-    lastrow.sort(key=lambda elem: elem[0])
-
-    # Ghép ký tự
-    for _, _, c in firstrow:
-        plate_number += c
-    for _, _, c in lastrow:
-        plate_number += c
-
-    # Giả lập confidence dựa trên số ký tự nhận diện
-    confidence = min(95, 60 + len(plate_number) * 5) if plate_number else 0
-
-    return {
-        'plate': plate_number if plate_number else 'Unknown',
-        'confidence': confidence,
-        'vehicleType': vehicle_type.capitalize() if vehicle_type else 'Unknown'
-    }
-
-# Route API
-@app.route('/api/recognize', methods=['POST'])
-def recognize_plate():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image provided'}), 400
-
-    file = request.files['image']
-    vehicle_type = request.form.get('vehicleType', '')
-
-    # Kiểm tra định dạng file
-    if not file.filename.lower().endswith(('.jpg', '.jpeg', '.png')):
-        return jsonify({'error': 'Unsupported file format'}), 400
-
-    # Lưu file tạm
-    filename = secure_filename(file.filename)
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(file_path)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_input, \
+         tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_output:
+        contents = await file.read()
+        logger.info(f"Đọc file: {file.filename}, kích thước: {len(contents)} bytes")
+        temp_input.write(contents)
+        temp_input_path = temp_input.name
+        temp_output_path = temp_output.name
+        logger.info(f"Temp input: {temp_input_path}, Temp output: {temp_output_path}")
 
     try:
-        # Đọc và xử lý ảnh
-        img = cv2.imread(file_path)
-        if img is None:
-            return jsonify({'error': 'Invalid image'}), 400
+        logger.info("Gọi some_cars.py")
+        result = subprocess.run(
+            ["python", "some_cars.py", temp_input_path, temp_output_path],
+            capture_output=True, text=True
+        )
+        logger.info(f"some_cars.py stdout: {result.stdout}")
+        logger.info(f"some_cars.py stderr: {result.stderr}")
 
-        # Resize ảnh
-        himg, wimg, _ = img.shape
-        if wimg/himg > 2:
-            img = cv2.resize(img, dsize=(1000, 200))
-        else:
-            img = cv2.resize(img, dsize=(800, 500))
+        output_lines = result.stdout.strip().split("\n")
+        license_plate = ""
+        vehicle_type = "unknown"
+        for line in output_lines:
+            if line.startswith("Bien so xe:"):
+                license_plate = line.split(":")[1].strip()
+            elif line.startswith("Loai xe:"):
+                vehicle_type = line.split(":")[1].strip()
+        logger.info(f"License plate: {license_plate}, Vehicle type: {vehicle_type}")
 
-        # Tiền xử lý
-        binImg = Pretreatment(img)
-        cnts = contours_detect(binImg)
-        imgtemp = draw_rects_on_img(img, cnts)
+        processed_img = cv2.imread(temp_output_path)
+        if processed_img is None:
+            logger.error(f"Không đọc được ảnh từ {temp_output_path}")
+            return JSONResponse(content={"error": "Không tạo được ảnh kết quả"}, status_code=500)
 
-        # Nhận diện
-        result = find_number(cnts, binImg, imgtemp, vehicle_type)
+        cv2.imwrite(output_filepath, processed_img)
+        logger.info(f"Đã lưu ảnh vào {output_filepath}")
 
-        return jsonify(result)
+        _, buffer = cv2.imencode('.jpg', processed_img)
+        img_base64 = base64.b64encode(buffer).decode('utf-8')
+        logger.info(f"Base64 length: {len(img_base64)}")
+
+        response = {
+            "license_plate": license_plate if license_plate else "Không xác định",
+            "vehicle_type": vehicle_type if vehicle_type else "Không xác định",
+            "processed_image": f"data:image/jpeg;base64,{img_base64}" if img_base64 else ""
+        }
+        logger.info(f"Response: {response}")
+        return JSONResponse(content=response)
 
     except Exception as e:
-        print(f"Error in API: {str(e)}")  # In lỗi ra console server
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Lỗi: {str(e)}")
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
     finally:
-        # Xóa file tạm
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        if os.path.exists(temp_input_path):
+            os.unlink(temp_input_path)
+        if os.path.exists(temp_output_path):
+            os.unlink(temp_output_path)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -6,17 +6,20 @@ import easyocr
 import tkinter as tk
 from tkinter import filedialog
 import subprocess
+import sys
 
-# Chọn ảnh
-# root = tk.Tk()
-# root.withdraw()
-# file_path = filedialog.askopenfilename(title="Chọn ảnh biển số", filetypes=[("Image files", "*.jpg *.png *.jpeg")])
+# Nhận ảnh từ sys.argv nếu có, nếu không dùng mặc định
+input_image = sys.argv[1] if len(sys.argv) > 1 else r"0404.jpg"
+output_image = sys.argv[2] if len(sys.argv) > 2 else "output.jpg"
+
 # Đọc ảnh
-img = cv2.imread(r"Bike_back\1.jpg")  # Truyền ảnh vào chỗ này
+img = cv2.imread(input_image)
+if img is None:
+    print("Error: Không đọc được ảnh")
+    sys.exit(1)
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 plt.imshow(cv2.cvtColor(gray, cv2.COLOR_BGR2RGB))
-
 
 bfilter = cv2.bilateralFilter(gray, 11, 17, 17) #Noise reduction
 edged = cv2.Canny(bfilter, 30, 200) #Edge detection
@@ -33,6 +36,15 @@ for contour in contours:
         location = approx
         break
 
+if location is None:
+    print("Không tìm thấy biển số")
+    subprocess.run([
+        r"venv\Scripts\python.exe", 
+        "./demo_first/TestImg_final.py", 
+        input_image, output_image
+    ])
+    sys.exit(0)
+
 mask = np.zeros(gray.shape, np.uint8)
 new_image = cv2.drawContours(mask, [location], 0,255, -1)
 new_image = cv2.bitwise_and(img, img, mask=mask)
@@ -41,6 +53,10 @@ new_image = cv2.bitwise_and(img, img, mask=mask)
 (x1, y1) = (np.min(x), np.min(y))
 (x2, y2) = (np.max(x), np.max(y))
 cropped_image = gray[x1:x2+1, y1:y2+1]
+
+# Phân loại xe
+himg, wimg = cropped_image.shape
+vehicle_type = "car" if wimg/himg > 2 else "motorcycle"
 
 reader = easyocr.Reader(['en'])
 result = reader.readtext(cropped_image)
@@ -58,17 +74,20 @@ if is_valid_license_plate(text):
     for char in text:
         if char.isalnum():
             result += char
-    print('Bien so xe:',result)
-    cv2.imshow('result',res)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    print('Bien so xe:', result)
+    print('Loai xe:', vehicle_type)
+    cv2.imwrite(output_image, res)  # Lưu ảnh cho API
+    # Chỉ hiển thị khi chạy thủ công
+    if len(sys.argv) <= 1:
+        cv2.imshow('result', res)
+        cv2.waitKey()
+        cv2.destroyAllWindows()
     # plt.imshow(cv2.cvtColor(res, cv2.COLOR_BGR2RGB))
     # plt.show()
-
 else:
     # Nếu sai => Gọi file TestImg_final.py
     subprocess.run([
-    r"venv\Scripts\python.exe", 
-    "./demo_first/TestImg_final.py", 
-    r"Bike_back\1.jpg"      # Chỗ này là đường dẫn của ảnh
-])
+        r"venv\Scripts\python.exe", 
+        "./demo_first/TestImg_final.py", 
+        input_image, output_image
+    ])
