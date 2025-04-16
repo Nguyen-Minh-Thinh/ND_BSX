@@ -47,7 +47,7 @@ async def process_license_plate(file: UploadFile = File(...)):
     try:
         logger.info("Gọi some_cars.py")
         result = subprocess.run(
-            ["python", "some_cars.py", temp_input_path, temp_output_path],
+            ["python", "demo_first/some_cars.py", temp_input_path, temp_output_path],
             capture_output=True, text=True
         )
         logger.info(f"some_cars.py stdout: {result.stdout}")
@@ -78,7 +78,7 @@ async def process_license_plate(file: UploadFile = File(...)):
         response = {
             "license_plate": license_plate if license_plate else "Không xác định",
             "vehicle_type": vehicle_type if vehicle_type else "Không xác định",
-            "processed_image": f"data:image/jpeg;base64,{img_base64}" if img_base64 else ""
+            "processed_image": f"/processed_images/{output_filename}"
         }
         logger.info(f"Response: {response}")
         return JSONResponse(content=response)
