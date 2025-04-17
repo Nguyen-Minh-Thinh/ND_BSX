@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import subprocess
 import cv2
 import base64
@@ -26,7 +27,7 @@ app.add_middleware(
 async def process_license_plate(file: UploadFile = File(...)):
     logger.info("Nhận request /process_license_plate")
     
-    output_dir = "processed_images"
+    output_dir = os.path.join("demo_first", "processed_images")  
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -92,6 +93,16 @@ async def process_license_plate(file: UploadFile = File(...)):
             os.unlink(temp_input_path)
         if os.path.exists(temp_output_path):
             os.unlink(temp_output_path)
+
+@app.get("/processed_images/{filename}")
+async def get_processed_image(filename: str):
+    file_path = os.path.join("demo_first", "processed_images", filename)
+    if not os.path.exists(file_path):
+        logger.error(f"Không tìm thấy ảnh: {file_path}")
+        return JSONResponse(content={"error": "Ảnh không tồn tại"}, status_code=404)
+    
+    logger.info(f"Truy cập ảnh: {file_path}")
+    return FileResponse(file_path, media_type="image/jpeg")
 
 if __name__ == "__main__":
     import uvicorn
