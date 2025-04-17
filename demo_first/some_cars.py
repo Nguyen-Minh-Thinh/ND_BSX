@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 # Nhận ảnh từ sys.argv nếu có, nếu không dùng mặc định
-input_image = sys.argv[1] if len(sys.argv) > 1 else r"0404.jpg"
+input_image = sys.argv[1] if len(sys.argv) > 1 else r"Bike_back/1.jpg"
 output_image = sys.argv[2] if len(sys.argv) > 2 else "output.jpg"
 
 # Đọc ảnh

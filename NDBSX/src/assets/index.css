@@ -1,0 +1,11 @@
+body {
+    background-color: #f4f6f9;
+  }
+  .plate-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .vehicle-type {
+    font-size: 1.2rem;
+  }
+  
