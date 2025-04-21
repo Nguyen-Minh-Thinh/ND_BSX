@@ -62,7 +62,7 @@ export default function UploadZone({ onFileSelect, isDisabled, previewSrc }) {
               src={previewSrc}
               alt="Xem trước"
               className="preview-image rounded shadow-sm"
-              style={{ maxHeight: '200px', objectFit: 'cover', width: '100%' }}
+              style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }}
             />
           </div>
         )}
