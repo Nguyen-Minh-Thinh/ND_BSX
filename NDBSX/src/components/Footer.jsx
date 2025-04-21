@@ -11,8 +11,6 @@ export default function Footer() {
               <h5>Liên kết nhanh</h5>
               <ul className="list-unstyled">
                 <li><a href="#" className="text-white">Trang chủ</a></li>
-                <li><a href="#history" className="text-white">Lịch sử</a></li>
-                <li><a href="#analytics" className="text-white">Thống kê</a></li>
               </ul>
             </div>
             <div className="col-md-3">
