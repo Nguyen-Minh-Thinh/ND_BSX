@@ -11,7 +11,6 @@ export default function Navbar() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item"><a className="nav-link active" href="#">Trang chủ</a></li>
-              <li className="nav-item"><a className="nav-link" href="#analytics">Thống kê</a></li>
             </ul>
           </div>
         </div>
